@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,5 +25,39 @@ namespace Scheduling
     {
       InitializeComponent();
     }
+
+    private PoSorter sorter = new PoSorter();
+
+    private void OpenCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+    {
+      e.CanExecute = true;
+    }
+
+    private void OpenCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+    {
+      // try{
+        var dialog =
+          new OpenFileDialog()
+          {
+            DefaultExt = ".po",
+            Filter = "PartialOrdered Files|*.po|All Files|*.*"
+          };
+        if (dialog.ShowDialog() == true)
+        {
+          sorter.LoadPoFile(dialog.FileName);
+        }
+
+      //} catch (Exception ex){
+      //  MessageBox.Show(ex.Message);
+      //}
+
+    }
+
+    private void MenuItemExit_Click(object sender, RoutedEventArgs e)
+    {
+      Close();
+    }
+
+
   }
 }

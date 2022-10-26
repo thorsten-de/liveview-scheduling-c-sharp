@@ -6,7 +6,16 @@
         xmlns:local="clr-namespace:Scheduling"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
-    </Grid>
+    <Window.CommandBindings>
+        <CommandBinding Command="Open" CanExecute="OpenCommand_CanExecute" Executed="OpenCommand_Executed" />
+    </Window.CommandBindings>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Command="Open" />
+                <Separator />
+                <MenuItem Header="_Exit" Click="MenuItemExit_Click" />
+            </MenuItem>
+        </Menu>
+    </DockPanel>
 </Window>
