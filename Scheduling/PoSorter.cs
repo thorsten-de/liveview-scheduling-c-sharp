@@ -24,6 +24,8 @@ namespace Scheduling
 
     public void TopoSort()
     {
+
+      Tasks.ForEach(t => t.Followers.Clear());
       foreach (var task in Tasks)
       {
         task.PrereqCount = task.PrereqTasks.Count;
@@ -59,8 +61,6 @@ namespace Scheduling
     private bool appearAfterPrereq(Task t)
     {
       var myIndex = SortedTasks.IndexOf(t);
-      if (myIndex == -1) 
-        return false;
 
       return t.PrereqTasks.All(pre => SortedTasks.IndexOf(pre) < myIndex);
     }
