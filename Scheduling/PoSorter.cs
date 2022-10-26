@@ -58,5 +58,42 @@ namespace Scheduling
 
     private static bool appearAfterPrereq(Task t) =>
       t.PrereqTasks.All(pre => pre.Index < t.Index);
+
+    private Task? ReadTask(StreamReader reader)
+    {
+      for (; ; )
+      {
+        var line = reader.ReadLine();
+        if (line == null)
+          return null;
+
+        var tokens = line.Split(",", 3, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        return new Task(
+          int.Parse(tokens[0]),
+          tokens[1],
+          tokens[2]
+            .Substring(1, tokens[2].Length - 2)
+            .Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(int.Parse)
+          );
+      }
+    }
+
+    public void LoadPoFile(string filename)
+    {
+      var tasks = new List<Task>();
+      using (var reader = new StreamReader(filename))
+      {
+        for (; ; )
+        {
+          Task? t = ReadTask(reader);
+          if (t == null) break;
+          tasks.Add(t);
+        }
+      }
+      
+      tasks.ForEach(t => t.NumbersToTasks(tasks));
+      Tasks = tasks;
+    }
   }
 }
