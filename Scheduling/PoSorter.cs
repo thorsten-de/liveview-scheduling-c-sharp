@@ -68,14 +68,17 @@ namespace Scheduling
           return null;
 
         var tokens = line.Split(",", 3, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        return new Task(
-          int.Parse(tokens[0]),
-          tokens[1],
-          tokens[2]
-            .Substring(1, tokens[2].Length - 2)
-            .Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .Select(int.Parse)
-          );
+        if (tokens.Length == 3)
+        {
+          return new Task(
+            int.Parse(tokens[0]),
+            tokens[1],
+            tokens[2]
+              .Substring(1, tokens[2].Length - 2)
+              .Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+              .Select(int.Parse)
+            );
+        }
       }
     }
 
