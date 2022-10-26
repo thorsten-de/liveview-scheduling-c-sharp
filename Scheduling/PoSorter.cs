@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,20 +18,22 @@ namespace Scheduling
 
   internal class PoSorter
   {
-    public IList<Task> SortedTasks { get; private set; }
+    public IList<Task> Tasks { get; private set; } = new List<Task>();
 
-    public IList<Task> TopoSort(IList<Task> taskList)
+    public IList<Task> SortedTasks { get; private set; } = new List<Task>();
+
+    public void TopoSort()
     {
-      foreach (var task in taskList)
+      foreach (var task in Tasks)
       {
         task.PrereqCount = task.PrereqTasks.Count;
         task.PrereqTasks.ForEach(pre => pre.AddFollower(task));
       }
 
-      var sortedTasks = new List<Task>(taskList.Count);
+      var sortedTasks = new List<Task>(Tasks.Count);
       var readyTasks = new Queue<Task>();
 
-      taskList
+      Tasks
         .Where(t => t.PrereqCount == 0)
         .ForEach(readyTasks.Enqueue);
 
@@ -48,7 +51,6 @@ namespace Scheduling
       }
 
       SortedTasks = sortedTasks;
-      return sortedTasks;
     }
 
     public bool VerifySort() =>
