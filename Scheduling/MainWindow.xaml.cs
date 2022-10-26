@@ -35,7 +35,8 @@ namespace Scheduling
 
     private void OpenCommand_Executed(object sender, ExecutedRoutedEventArgs e)
     {
-      // try{
+      try
+      {
         var dialog =
           new OpenFileDialog()
           {
@@ -45,12 +46,15 @@ namespace Scheduling
         if (dialog.ShowDialog() == true)
         {
           sorter.LoadPoFile(dialog.FileName);
+          unsortedListBox.ItemsSource = sorter.Tasks;
+          sortButton.IsEnabled = true;
         }
 
-      //} catch (Exception ex){
-      //  MessageBox.Show(ex.Message);
-      //}
-
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show(ex.Message);
+      }
     }
 
     private void MenuItemExit_Click(object sender, RoutedEventArgs e)
@@ -59,5 +63,12 @@ namespace Scheduling
     }
 
 
+    private void sortButton_Click(object sender, RoutedEventArgs e)
+    {
+      sorter.TopoSort();
+      sortedListBox.ItemsSource = sorter.SortedTasks;
+      string result = sorter.VerifySort() ? "Successfully" : "Wrongly";
+      MessageBox.Show($"{result} sorted {sorter.SortedTasks.Count} out of {sorter.Tasks.Count} tasks.");
+    }
   }
 }

@@ -17,5 +17,34 @@
                 <MenuItem Header="_Exit" Click="MenuItemExit_Click" />
             </MenuItem>
         </Menu>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="Margin" Value="5"/>
+                    <Setter Property="BorderBrush" Value="Black"/>
+                    <Setter Property="BorderThickness" Value="1"/>
+                    <Setter Property="Background" Value="White"/>
+                </Style>
+            </Grid.Resources>
+
+            <Border Grid.Column="0">
+                <ListBox Name="unsortedListBox"/>
+            </Border>
+
+            <Button Name="sortButton" Content="Sort"
+                Grid.Column="1" Width="50" Height="30"
+                IsDefault="True" IsEnabled="False"
+                Click="sortButton_Click"/>
+
+            <Border Grid.Column="2">
+                <ListBox Name="sortedListBox"/>
+            </Border>
+        </Grid>
     </DockPanel>
 </Window>
