@@ -56,8 +56,14 @@ namespace Scheduling
     public bool VerifySort() =>
       SortedTasks.All(appearAfterPrereq);
 
-    private static bool appearAfterPrereq(Task t) =>
-      t.PrereqTasks.All(pre => pre.Index < t.Index);
+    private bool appearAfterPrereq(Task t)
+    {
+      var myIndex = SortedTasks.IndexOf(t);
+      if (myIndex == -1) 
+        return false;
+
+      return t.PrereqTasks.All(pre => SortedTasks.IndexOf(pre) < myIndex);
+    }
 
     private Task? ReadTask(StreamReader reader)
     {
