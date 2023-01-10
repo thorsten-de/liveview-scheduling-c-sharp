@@ -18,7 +18,7 @@
             </MenuItem>
         </Menu>
 
-        <Grid>
+        <Grid DockPanel.Dock="Bottom" Height="100">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition Width="Auto"/>
@@ -46,5 +46,8 @@
                 <ListBox Name="sortedListBox"/>
             </Border>
         </Grid>
+        <Border Margin="10" BorderBrush="Gray" BorderThickness="2">
+            <Canvas x:Name="mainCanvas" Margin="10"/>
+        </Border>
     </DockPanel>
 </Window>
