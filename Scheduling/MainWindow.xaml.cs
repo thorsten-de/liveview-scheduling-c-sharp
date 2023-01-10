@@ -16,59 +16,66 @@ using System.Windows.Shapes;
 
 namespace Scheduling
 {
-  /// <summary>
-  /// Interaction logic for MainWindow.xaml
-  /// </summary>
-  public partial class MainWindow : Window
-  {
-    public MainWindow()
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
     {
-      InitializeComponent();
-    }
-
-    private PoSorter sorter = new PoSorter();
-
-    private void OpenCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-    {
-      e.CanExecute = true;
-    }
-
-    private void OpenCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-    {
-      try
-      {
-        var dialog =
-          new OpenFileDialog()
-          {
-            DefaultExt = ".po",
-            Filter = "PartialOrdered Files|*.po|All Files|*.*"
-          };
-        if (dialog.ShowDialog() == true)
+        public MainWindow()
         {
-          sorter.LoadPoFile(dialog.FileName);
-          unsortedListBox.ItemsSource = sorter.Tasks;
-          sortButton.IsEnabled = true;
+            InitializeComponent();
         }
 
-      }
-      catch (Exception ex)
-      {
-        MessageBox.Show(ex.Message);
-      }
-    }
+        private PoSorter sorter = new PoSorter();
 
-    private void MenuItemExit_Click(object sender, RoutedEventArgs e)
-    {
-      Close();
-    }
+        private void OpenCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        private void OpenCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            try
+            {
+                var dialog =
+                  new OpenFileDialog()
+                  {
+                      DefaultExt = ".po",
+                      Filter = "PartialOrdered Files|*.po|All Files|*.*"
+                  };
+                if (dialog.ShowDialog() == true)
+                {
+                    sorter.LoadPoFile(dialog.FileName);
+                    unsortedListBox.ItemsSource = sorter.Tasks;
+                    sortButton.IsEnabled = true;
+                    drawButton.IsEnabled = true;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void MenuItemExit_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
 
 
-    private void sortButton_Click(object sender, RoutedEventArgs e)
-    {
-      sorter.TopoSort();
-      sortedListBox.ItemsSource = sorter.SortedTasks;
-      string result = sorter.VerifySort() ? "Successfully" : "Wrongly";
-      MessageBox.Show($"{result} sorted {sorter.SortedTasks.Count} out of {sorter.Tasks.Count} tasks.");
+        private void sortButton_Click(object sender, RoutedEventArgs e)
+        {
+            sorter.TopoSort();
+            sortedListBox.ItemsSource = sorter.SortedTasks;
+            string result = sorter.VerifySort() ? "Successfully" : "Wrongly";
+            MessageBox.Show($"{result} sorted {sorter.SortedTasks.Count} out of {sorter.Tasks.Count} tasks.");
+        }
+
+        private void drawButton_Click(object sender, RoutedEventArgs e)
+        {
+            sorter.BuildPertChart();
+            sorter.DrawPertChart(mainCanvas);
+        }
     }
-  }
 }

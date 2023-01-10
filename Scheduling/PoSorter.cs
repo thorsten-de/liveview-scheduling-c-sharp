@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace Scheduling
 {
@@ -22,6 +27,9 @@ namespace Scheduling
 
         public IList<Task> SortedTasks { get; private set; } = new List<Task>();
 
+        private IList<IList<Task>> Columns = new List<IList<Task>>();
+
+        private Queue<Task> ReadyTasks = new Queue<Task>();
 
         private void PrepareTasks()
         {
@@ -31,35 +39,56 @@ namespace Scheduling
                 task.PrereqCount = task.PrereqTasks.Count;
                 task.PrereqTasks.ForEach(pre => pre.AddFollower(task));
             }
-        }
-        public void TopoSort()
-        {
-            PrepareTasks();
-
-            var sortedTasks = new List<Task>(Tasks.Count);
-            var readyTasks = new Queue<Task>();
 
             Tasks
               .Where(t => t.PrereqCount == 0)
-              .ForEach(readyTasks.Enqueue);
-
-            while (readyTasks.Any())
-            {
-                var readyTask = readyTasks.Dequeue();
-                sortedTasks.Add(readyTask);
-
-                foreach (var follower in readyTask.Followers)
-                {
-                    follower.PrereqCount--;
-                    if (follower.PrereqCount == 0)
-                        readyTasks.Enqueue(follower);
-                }
-            }
-
-            SortedTasks = sortedTasks;
+              .ForEach(ReadyTasks.Enqueue);
         }
 
+        private void EnqueueFollowers(Task task, Queue<Task> queue)
+        {
+            foreach (var follower in task.Followers)
+            {
+                follower.PrereqCount--;
+                if (follower.PrereqCount == 0)
+                    queue.Enqueue(follower);
+            }
+        }
 
+        private void ProcessReadyTasks(IList<Task> into, Queue<Task> addFollowersTo)
+        {
+            while (ReadyTasks.Any())
+            {
+                var readyTask = ReadyTasks.Dequeue();
+                into.Add(readyTask);
+
+                EnqueueFollowers(readyTask, addFollowersTo);
+            }
+        }
+
+        public void TopoSort()
+        {
+            SortedTasks = new List<Task>(Tasks.Count);
+
+            PrepareTasks();
+            ProcessReadyTasks(into: SortedTasks, addFollowersTo: ReadyTasks);
+        }
+
+        public void BuildPertChart()
+        {
+            Columns.Clear();
+            PrepareTasks();
+
+            while (ReadyTasks.Any())
+            {
+                var newReadyTasks = new Queue<Task>();
+                var newColumn = new List<Task>();
+                Columns.Add(newColumn);
+
+                ProcessReadyTasks(into: newColumn, addFollowersTo: newReadyTasks);
+                ReadyTasks = newReadyTasks;
+            }
+        }
 
         public bool VerifySort() =>
           SortedTasks.All(appearAfterPrereq);
@@ -109,6 +138,49 @@ namespace Scheduling
 
             tasks.ForEach(t => t.NumbersToTasks(tasks));
             Tasks = tasks;
+        }
+
+        public const double ItemWidth = 24;
+        public const double ItemHeight = 24;
+        public const double HorizontalGap = 32;
+        public const double VerticalGap = 8;
+
+        public static Brush Background = Brushes.White;
+        public static Brush TaskBrush = Brushes.Blue;
+        public static double StrokeTickness = 1.0;
+
+        private static double getVerticalCenter(Rect rect) => rect.Top + rect.Height / 2;
+
+        public void DrawPertChart(Canvas canvas)
+        {
+            canvas.Children.Clear();
+
+            Columns.Aggregate(0.0, (x, c) =>
+            {
+                c.Aggregate(0.0, (y, task) =>
+                {
+                    task.Bounds = new Rect(x, y, ItemWidth, ItemHeight);
+                    return y + ItemHeight + VerticalGap;
+                });
+                return x + ItemWidth + HorizontalGap;
+            });
+
+            foreach (Task task in Tasks.Where(task => task.Bounds.Width > 0))
+            {
+                Point from = new(task.Bounds.Left, getVerticalCenter(task.Bounds));
+                foreach (Task preTask in task.PrereqTasks)
+                {
+                    Point to = new(preTask.Bounds.Right, getVerticalCenter(preTask.Bounds));
+                    canvas.DrawLine(from, to, Brushes.Gray, StrokeTickness);
+                }
+            }
+
+            foreach (Task task in Tasks)
+            {
+                canvas.DrawRectangle(task.Bounds, Background, TaskBrush, StrokeTickness);
+                var label = canvas.DrawLabel(task.Bounds, task.Index, Brushes.Transparent, TaskBrush, HorizontalAlignment.Center, VerticalAlignment.Center, 12, 2);
+                label.ToolTip = task.Name;
+            }
         }
     }
 }

@@ -36,18 +36,25 @@
             <Border Grid.Column="0">
                 <ListBox Name="unsortedListBox"/>
             </Border>
+            <StackPanel Grid.Column="1">
 
-            <Button Name="sortButton" Content="Sort"
-                Grid.Column="1" Width="50" Height="30"
+                <Button Name="sortButton" Content="Sort" 
+                Margin="5"
                 IsDefault="True" IsEnabled="False"
                 Click="sortButton_Click"/>
+
+                <Button Name="drawButton" Content="DrawPERT"
+                IsDefault="True" IsEnabled="False"
+                Click="drawButton_Click"/>
+            </StackPanel>
+
 
             <Border Grid.Column="2">
                 <ListBox Name="sortedListBox"/>
             </Border>
         </Grid>
         <Border Margin="10" BorderBrush="Gray" BorderThickness="2">
-            <Canvas x:Name="mainCanvas" Margin="10"/>
+           <Canvas x:Name="mainCanvas" Margin="10"/>
         </Border>
     </DockPanel>
 </Window>
