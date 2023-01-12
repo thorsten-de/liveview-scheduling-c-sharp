@@ -11,15 +11,13 @@ namespace Scheduling
     {
         public int Index { get; private set; }
         public string Name { get; private set; }
+        
         public int Duration { get; set; }
-
         public int StartTime { get; private set; }
         public int EndTime { get; private set; }
-
+        public bool IsCritical { get; set; }
 
         public Rect Bounds { get; set; }
-
-
 
         public IList<int> PrereqNumbers { get; private set; }
 
@@ -55,6 +53,14 @@ namespace Scheduling
         {
             StartTime = PrereqTasks.Any() ? PrereqTasks.Max(t => t.EndTime) : 0;
             EndTime = StartTime + Duration;
+        }
+
+        public void MarkAsCritical()
+        {
+            IsCritical = true;
+            PrereqTasks
+                .Where(pre => pre.EndTime == this.StartTime)
+                .ForEach(pre => pre.MarkAsCritical());
         }
     }
 }

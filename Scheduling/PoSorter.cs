@@ -38,6 +38,7 @@ namespace Scheduling
             {
                 task.PrereqCount = task.PrereqTasks.Count;
                 task.PrereqTasks.ForEach(pre => pre.AddFollower(task));
+                task.IsCritical = false;
             }
 
             Tasks
@@ -89,6 +90,9 @@ namespace Scheduling
                 ProcessReadyTasks(into: newColumn, addFollowersTo: newReadyTasks);
                 ReadyTasks = newReadyTasks;
             }
+
+            Task finalTask = Columns.Last().First();
+            finalTask.MarkAsCritical();
         }
 
         public bool VerifySort() =>
