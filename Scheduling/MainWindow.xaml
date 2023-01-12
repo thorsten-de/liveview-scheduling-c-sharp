@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Scheduling"
         mc:Ignorable="d"
-        Title="MainWindow" Height="1200" Width="2000">
+        Title="MainWindow" Height="800" Width="1200">
     <Window.CommandBindings>
         <CommandBinding Command="Open" CanExecute="OpenCommand_CanExecute" Executed="OpenCommand_Executed" />
     </Window.CommandBindings>
