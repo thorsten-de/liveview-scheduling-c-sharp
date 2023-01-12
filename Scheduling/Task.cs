@@ -59,8 +59,10 @@ namespace Scheduling
         {
             IsCritical = true;
             PrereqTasks
-                .Where(pre => pre.EndTime == this.StartTime)
+                .Where(IsCriticalDependentOn)
                 .ForEach(pre => pre.MarkAsCritical());
         }
+
+        public bool IsCriticalDependentOn(Task preTask) => StartTime == preTask.EndTime;
     }
 }

@@ -146,14 +146,13 @@ namespace Scheduling
             Tasks = tasks;
         }
 
-        public const double ItemWidth = 50;
-        public const double ItemHeight = 75;
-        public const double HorizontalGap = 40;
+        public const double ItemWidth = 48;
+        public const double ItemHeight = 64;
+        public const double HorizontalGap = 32;
         public const double VerticalGap = 8;
 
-        public static Brush Background = Brushes.LightBlue;
-        public static Brush TaskBrush = Brushes.Black;
-        public static double StrokeTickness = 1.0;
+        public const double StrokeThickness = 1;
+
 
         private static double getVerticalCenter(Rect rect) => rect.Top + rect.Height / 2;
 
@@ -176,21 +175,36 @@ namespace Scheduling
                 Point from = new(task.Bounds.Left, getVerticalCenter(task.Bounds));
                 foreach (Task preTask in task.PrereqTasks)
                 {
+                    Brush color = Brushes.Gray;
+                    double thickness = StrokeThickness;
+                    if (task.IsCriticalDependentOn(preTask)) {
+                        thickness = 3.0;
+                        if (task.IsCritical)
+                        {
+                            color = Brushes.Red;
+                        }
+
+                    }
                     Point to = new(preTask.Bounds.Right, getVerticalCenter(preTask.Bounds));
-                    canvas.DrawLine(from, to, Brushes.Gray, StrokeTickness);
+                    canvas.DrawLine(from, to, color, thickness);
                 }
             }
 
             foreach (Task task in Tasks)
             {
-                canvas.DrawRectangle(task.Bounds, Background, TaskBrush, StrokeTickness);
+                (Brush background, Brush foreground) = task.IsCritical
+                    ? (Brushes.Pink, Brushes.Red)
+                    : (Brushes.LightBlue, Brushes.Black);
+                
+                canvas.DrawRectangle(task.Bounds, background, foreground, StrokeThickness);
+
                 string text = $"""
                     Task {task.Index}
                     Dur: {task.Duration}
                     Start: {task.StartTime}
                     End: {task.EndTime}
                     """;
-                var label = canvas.DrawLabel(task.Bounds, text, Brushes.Transparent, TaskBrush, HorizontalAlignment.Center, VerticalAlignment.Center, 11, 2);
+                var label = canvas.DrawLabel(task.Bounds, text, Brushes.Transparent, foreground, HorizontalAlignment.Center, VerticalAlignment.Center, 11, 2);
                 label.ToolTip = task.Name;
             }
         }
