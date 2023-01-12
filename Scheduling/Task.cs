@@ -11,6 +11,7 @@ namespace Scheduling
     {
         public int Index { get; private set; }
         public string Name { get; private set; }
+        public int Duration { get; set; }
 
         public Rect Bounds { get; set; }
 
@@ -24,10 +25,12 @@ namespace Scheduling
         public IList<Task> Followers { get; private set; }
 
 
-        public Task(int index, string name, IEnumerable<int> prereqNumbers)
+        public Task(int index, int duration, string name, IEnumerable<int> prereqNumbers)
         {
             Index = index;
             Name = name;
+            Duration = duration;
+
             PrereqNumbers = new List<int>(prereqNumbers);
             Followers = new List<Task>();
         }

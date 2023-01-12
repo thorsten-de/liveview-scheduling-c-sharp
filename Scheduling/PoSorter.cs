@@ -108,14 +108,15 @@ namespace Scheduling
                 if (line == null)
                     return null;
 
-                var tokens = line.Split(",", 3, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                if (tokens.Length == 3)
+                var tokens = line.Split(",", 4, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                if (tokens.Length == 4)
                 {
                     return new Task(
                       int.Parse(tokens[0]),
-                      tokens[1],
-                      tokens[2]
-                        .Substring(1, tokens[2].Length - 2)
+                      int.Parse(tokens[1]),
+                      tokens[2],
+                      tokens[3]
+                        .Substring(1, tokens[3].Length - 2)
                         .Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                         .Select(int.Parse)
                       );
