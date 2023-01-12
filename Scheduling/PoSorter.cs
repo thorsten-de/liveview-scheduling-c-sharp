@@ -142,13 +142,13 @@ namespace Scheduling
             Tasks = tasks;
         }
 
-        public const double ItemWidth = 24;
-        public const double ItemHeight = 24;
-        public const double HorizontalGap = 32;
+        public const double ItemWidth = 50;
+        public const double ItemHeight = 75;
+        public const double HorizontalGap = 40;
         public const double VerticalGap = 8;
 
         public static Brush Background = Brushes.White;
-        public static Brush TaskBrush = Brushes.Blue;
+        public static Brush TaskBrush = Brushes.Black;
         public static double StrokeTickness = 1.0;
 
         private static double getVerticalCenter(Rect rect) => rect.Top + rect.Height / 2;
@@ -180,7 +180,13 @@ namespace Scheduling
             foreach (Task task in Tasks)
             {
                 canvas.DrawRectangle(task.Bounds, Background, TaskBrush, StrokeTickness);
-                var label = canvas.DrawLabel(task.Bounds, task.Index, Brushes.Transparent, TaskBrush, HorizontalAlignment.Center, VerticalAlignment.Center, 12, 2);
+                string text = $"""
+                    Task {task.Index}
+                    Dur: {task.Duration}
+                    Start: {task.StartTime}
+                    End: {task.EndTime}
+                    """;
+                var label = canvas.DrawLabel(task.Bounds, text, Brushes.Transparent, TaskBrush, HorizontalAlignment.Center, VerticalAlignment.Center, 12, 2);
                 label.ToolTip = task.Name;
             }
         }
