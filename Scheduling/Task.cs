@@ -13,6 +13,10 @@ namespace Scheduling
         public string Name { get; private set; }
         public int Duration { get; set; }
 
+        public int StartTime { get; private set; }
+        public int EndTime { get; private set; }
+
+
         public Rect Bounds { get; set; }
 
 
@@ -46,5 +50,11 @@ namespace Scheduling
         public void AddFollower(Task follower) => Followers.Add(follower);
 
         public override string ToString() => Name;
+
+        public void SetTimes()
+        {
+            StartTime = PrereqTasks.Any() ? PrereqTasks.Max(t => t.EndTime) : 0;
+            EndTime = StartTime + Duration;
+        }
     }
 }

@@ -60,6 +60,7 @@ namespace Scheduling
             while (ReadyTasks.Any())
             {
                 var readyTask = ReadyTasks.Dequeue();
+                readyTask.SetTimes();
                 into.Add(readyTask);
 
                 EnqueueFollowers(readyTask, addFollowersTo);
