@@ -208,5 +208,107 @@ namespace Scheduling
                 label.ToolTip = task.Name;
             }
         }
+
+        public static Size CellSize = new Size(32, 32);
+        public static double RowHeaderWidth = 128;
+        public static Brush GridColor = Brushes.LightGray;
+        public static double GridThickness = 1.0;
+        public static Brush ColumnHeaderColor = Brushes.ForestGreen;
+        public static Brush RowHeaderColor = Brushes.Black;
+
+
+        public void DrawGrid(Canvas canvas, int dateColumns)
+        {
+            var top = 0;
+            double left = RowHeaderWidth;
+            var bottom = (Tasks.Count + 1) * CellSize.Height + top;
+            double x = left;
+            for (int i = 0; i <= dateColumns; i++) {
+                canvas.DrawLine(new Point(x, top), new Point(x, bottom), GridColor, GridThickness);
+                x += CellSize.Width;
+            }
+
+            double right = left + dateColumns * CellSize.Width;
+            double y = top;
+            for (int i = 0; i < Tasks.Count + 2; i++)
+            {
+                canvas.DrawLine(new Point(left, y), new Point(right,  y), GridColor, GridThickness);
+                y += CellSize.Height;
+            }
+        }
+
+        public void DrawColumnHeaders(Canvas canvas, int start, int finish) 
+        {
+            var top = 0;
+            double left = RowHeaderWidth;
+            for (int day = start; day <= finish; day++)
+            {
+                canvas.DrawLabel(new Rect(new Point(left, top), CellSize), day, Brushes.Transparent, ColumnHeaderColor, HorizontalAlignment.Center, VerticalAlignment.Center, 11, 1);
+                left += CellSize.Width;
+            }
+        }
+
+
+        public void DrawRowHeaders(Canvas canvas) {
+            double left = 0;
+            Tasks.Aggregate(CellSize.Height, (y, task) =>
+            {
+                canvas.DrawLabel(new Rect(left, y, RowHeaderWidth, CellSize.Height), $"{task.Index}. {task.Name}", Brushes.Transparent, RowHeaderColor, HorizontalAlignment.Left, VerticalAlignment.Center, 11, 1);
+                return y + CellSize.Height;
+            });
+
+        }
+
+        public void DrawGanttChart(Canvas canvas)
+        {
+            canvas.Children.Clear();
+
+            var minDay = Tasks.Min(t => t.StartTime);
+            var maxDay = Tasks.Max(t => t.EndTime);
+
+
+            DrawGrid(canvas, maxDay - minDay + 1);
+            DrawColumnHeaders(canvas, minDay, maxDay);
+            DrawRowHeaders(canvas);
+
+            /*foreach (Task task in Tasks.Where(task => task.Bounds.Width > 0))
+            {
+                Point from = new(task.Bounds.Left, getVerticalCenter(task.Bounds));
+                foreach (Task preTask in task.PrereqTasks)
+                {
+                    Brush color = Brushes.Gray;
+                    double thickness = StrokeThickness;
+                    if (task.IsCriticalDependentOn(preTask)) {
+                        thickness = 3.0;
+                        if (task.IsCritical)
+                        {
+                            color = Brushes.Red;
+                        }
+
+                    }
+                    Point to = new(preTask.Bounds.Right, getVerticalCenter(preTask.Bounds));
+                    canvas.DrawLine(from, to, color, thickness);
+                }
+            }
+
+            foreach (Task task in Tasks)
+            {
+                (Brush background, Brush foreground) = task.IsCritical
+                    ? (Brushes.Pink, Brushes.Red)
+                    : (Brushes.LightBlue, Brushes.Black);
+                
+                canvas.DrawRectangle(task.Bounds, background, foreground, StrokeThickness);
+
+                string text = $"""
+                    Task {task.Index}
+                    Dur: {task.Duration}
+                    Start: {task.StartTime}
+                    End: {task.EndTime}
+                    """;
+                var label = canvas.DrawLabel(task.Bounds, text, Brushes.Transparent, foreground, HorizontalAlignment.Center, VerticalAlignment.Center, 11, 2);
+                label.ToolTip = task.Name;
+            }
+            */
+        }
     }
 }

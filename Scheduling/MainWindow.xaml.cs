@@ -49,6 +49,7 @@ namespace Scheduling
                     unsortedListBox.ItemsSource = sorter.Tasks;
                     sortButton.IsEnabled = true;
                     drawButton.IsEnabled = true;
+                    drawGanttButton.IsEnabled = true;
                 }
 
             }
@@ -76,6 +77,12 @@ namespace Scheduling
         {
             sorter.BuildPertChart();
             sorter.DrawPertChart(mainCanvas);
+        }
+
+        private void drawGanttButton_Click(object sender, RoutedEventArgs e)
+        {
+            sorter.BuildPertChart();
+            sorter.DrawGanttChart(mainCanvas);
         }
     }
 }

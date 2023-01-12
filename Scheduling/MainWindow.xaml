@@ -44,8 +44,14 @@
                 Click="sortButton_Click"/>
 
                 <Button Name="drawButton" Content="DrawPERT"
+                Margin="5"
                 IsDefault="True" IsEnabled="False"
                 Click="drawButton_Click"/>
+                
+                <Button Name="drawGanttButton" Content="DrawGantt"
+                Margin="5"
+                IsDefault="True" IsEnabled="False"
+                Click="drawGanttButton_Click"/>
             </StackPanel>
 
 
