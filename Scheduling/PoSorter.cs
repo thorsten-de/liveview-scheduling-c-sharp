@@ -147,7 +147,7 @@ namespace Scheduling
         public const double HorizontalGap = 40;
         public const double VerticalGap = 8;
 
-        public static Brush Background = Brushes.White;
+        public static Brush Background = Brushes.LightBlue;
         public static Brush TaskBrush = Brushes.Black;
         public static double StrokeTickness = 1.0;
 
@@ -186,7 +186,7 @@ namespace Scheduling
                     Start: {task.StartTime}
                     End: {task.EndTime}
                     """;
-                var label = canvas.DrawLabel(task.Bounds, text, Brushes.Transparent, TaskBrush, HorizontalAlignment.Center, VerticalAlignment.Center, 12, 2);
+                var label = canvas.DrawLabel(task.Bounds, text, Brushes.Transparent, TaskBrush, HorizontalAlignment.Center, VerticalAlignment.Center, 11, 2);
                 label.ToolTip = task.Name;
             }
         }
