@@ -170,32 +170,19 @@ namespace Scheduling
                 return x + ItemWidth + HorizontalGap;
             });
 
-            foreach (Task task in Tasks.Where(task => task.Bounds.Width > 0))
-            {
-                Point from = new(task.Bounds.Left, getVerticalCenter(task.Bounds));
-                foreach (Task preTask in task.PrereqTasks)
-                {
-                    Brush color = Brushes.Gray;
-                    double thickness = StrokeThickness;
-                    if (task.IsCriticalDependentOn(preTask)) {
-                        thickness = 3.0;
-                        if (task.IsCritical)
-                        {
-                            color = Brushes.Red;
-                        }
+            DrawLinks(canvas);
 
-                    }
-                    Point to = new(preTask.Bounds.Right, getVerticalCenter(preTask.Bounds));
-                    canvas.DrawLine(from, to, color, thickness);
-                }
-            }
+            DrawTasks(canvas);
+        }
 
+        private void DrawTasks(Canvas canvas)
+        {
             foreach (Task task in Tasks)
             {
                 (Brush background, Brush foreground) = task.IsCritical
                     ? (Brushes.Pink, Brushes.Red)
                     : (Brushes.LightBlue, Brushes.Black);
-                
+
                 canvas.DrawRectangle(task.Bounds, background, foreground, StrokeThickness);
 
                 string text = $"""
@@ -209,12 +196,37 @@ namespace Scheduling
             }
         }
 
+        private void DrawLinks(Canvas canvas)
+        {
+            foreach (Task task in Tasks.Where(task => task.Bounds.Width > 0))
+            {
+                Point from = new(task.Bounds.Left, getVerticalCenter(task.Bounds));
+                foreach (Task preTask in task.PrereqTasks)
+                {
+                    Brush color = Brushes.Gray;
+                    double thickness = StrokeThickness;
+                    if (task.IsCriticalDependentOn(preTask))
+                    {
+                        thickness = 3.0;
+                        if (task.IsCritical)
+                        {
+                            color = Brushes.Red;
+                        }
+
+                    }
+                    Point to = new(preTask.Bounds.Right, getVerticalCenter(preTask.Bounds));
+                    canvas.DrawLine(from, to, color, thickness);
+                }
+            }
+        }
+
         public static Size CellSize = new Size(32, 32);
         public static double RowHeaderWidth = 128;
         public static Brush GridColor = Brushes.LightGray;
         public static double GridThickness = 1.0;
         public static Brush ColumnHeaderColor = Brushes.ForestGreen;
         public static Brush RowHeaderColor = Brushes.Black;
+        public static double LinkSpacing = 5.0;
 
 
         public void DrawGrid(Canvas canvas, int dateColumns)
@@ -259,6 +271,18 @@ namespace Scheduling
 
         }
 
+        private double DayToX(int day) => day * CellSize.Width;
+
+        private void ArrangeTasks()
+        {
+            double top = CellSize.Height;
+            Tasks.Aggregate(top + CellSize.Height / 4.0, (y, task) =>
+            {
+                task.Bounds = new Rect(RowHeaderWidth + DayToX(task.StartTime), y, DayToX(task.Duration), CellSize.Height / 2);
+                return y + CellSize.Height;
+            });
+        }
+
         public void DrawGanttChart(Canvas canvas)
         {
             canvas.Children.Clear();
@@ -266,49 +290,46 @@ namespace Scheduling
             var minDay = Tasks.Min(t => t.StartTime);
             var maxDay = Tasks.Max(t => t.EndTime);
 
-
-            DrawGrid(canvas, maxDay - minDay + 1);
-            DrawColumnHeaders(canvas, minDay, maxDay);
+            DrawGrid(canvas, maxDay - minDay);
+            DrawColumnHeaders(canvas, minDay+1, maxDay);
             DrawRowHeaders(canvas);
+            
+            ArrangeTasks();
 
-            /*foreach (Task task in Tasks.Where(task => task.Bounds.Width > 0))
+            foreach (Task task in Tasks)
             {
-                Point from = new(task.Bounds.Left, getVerticalCenter(task.Bounds));
-                foreach (Task preTask in task.PrereqTasks)
+                task.PrereqTasks.Aggregate(task.Bounds.Left + LinkSpacing, (x, preTask) =>
                 {
                     Brush color = Brushes.Gray;
                     double thickness = StrokeThickness;
-                    if (task.IsCriticalDependentOn(preTask)) {
+                    if (task.IsCriticalDependentOn(preTask))
+                    {
                         thickness = 3.0;
                         if (task.IsCritical)
                         {
                             color = Brushes.Red;
                         }
-
                     }
-                    Point to = new(preTask.Bounds.Right, getVerticalCenter(preTask.Bounds));
-                    canvas.DrawLine(from, to, color, thickness);
-                }
+                    
+                    Point from = new(preTask.Bounds.Right, getVerticalCenter(preTask.Bounds));
+                    Point to = new(x, from.Y > task.Bounds.Bottom ? task.Bounds.Bottom : task.Bounds.Top);
+                    Point corner = new Point(to.X, from.Y);
+                    canvas.DrawLine(from, corner, color, thickness);
+                    canvas.DrawLine(corner, to, color, thickness);
+                    return x + LinkSpacing;
+                });
             }
-
+            
             foreach (Task task in Tasks)
             {
                 (Brush background, Brush foreground) = task.IsCritical
                     ? (Brushes.Pink, Brushes.Red)
-                    : (Brushes.LightBlue, Brushes.Black);
+                    : (Brushes.LightBlue, Brushes.Blue);
                 
-                canvas.DrawRectangle(task.Bounds, background, foreground, StrokeThickness);
-
-                string text = $"""
-                    Task {task.Index}
-                    Dur: {task.Duration}
-                    Start: {task.StartTime}
-                    End: {task.EndTime}
-                    """;
-                var label = canvas.DrawLabel(task.Bounds, text, Brushes.Transparent, foreground, HorizontalAlignment.Center, VerticalAlignment.Center, 11, 2);
-                label.ToolTip = task.Name;
+                var taskRect = canvas.DrawRectangle(task.Bounds, background, foreground, StrokeThickness);
+                taskRect.ToolTip = task.Name;
             }
-            */
+            
         }
     }
 }
