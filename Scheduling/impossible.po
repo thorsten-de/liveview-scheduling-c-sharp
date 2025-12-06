@@ -1,0 +1,6 @@
+0, Loop 1, [1]
+1, Loop 2, [2]
+2, Loop 3, [0]
+3, Can sort 1, []
+4, Can sort 3, [5]
+5, Can sort 2, [3]
